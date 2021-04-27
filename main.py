@@ -10,7 +10,7 @@ pygame.display.set_caption('Lost Knight')
 
 x = 200
 y = 200
-img = pygame.image.load('Bilder\Gegner.PNG')
+img = pygame.image.load('Bilder/Hero Knight/Sprites/HeroKnight/Idle/HeroKnight_Idle_0.png')
 rect = img.get_rect()
 rect.center = (x,y)
 
