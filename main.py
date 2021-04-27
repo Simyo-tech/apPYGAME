@@ -50,7 +50,7 @@ class Figur(pygame.sprite.Sprite):
 
 
 
-spieler  = Figur(200, 500, 2, 10)
+spieler  = Figur(200, 500, 2, 8)
 
 run = True
 while run:
