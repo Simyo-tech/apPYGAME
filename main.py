@@ -1,4 +1,6 @@
 # This is a sample Python script.
+import pygame
+pygame.init()
 
 
 # Press ⌃R to execute it or replace it with your code.
