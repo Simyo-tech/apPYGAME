@@ -24,7 +24,7 @@ BG = (240, 255, 255)
 RED = (255, 0, 0)
 def draw_bg():
     screen.fill(BG)
-    pygame.draw.line(screen, RED, (0, 300), (SCREEN_WIDTH, 300))
+    pygame.draw.line(screen, RED, (0, 500), (SCREEN_WIDTH, 500))
 
 
 class Figur(pygame.sprite.Sprite):
@@ -62,7 +62,7 @@ class Figur(pygame.sprite.Sprite):
         dy = 0
 
         if self.sprung == True:
-            self.hoehe_y = -11
+            self.hoehe_y = -15
             self.sprung = False
 
         self.hoehe_y += GRAVITATION
@@ -71,8 +71,8 @@ class Figur(pygame.sprite.Sprite):
         dy += self.hoehe_y
 
         #Kollision checken
-        if self.rect.bottom + dy > 300:
-            dy = 300 - self.rect.bottom
+        if self.rect.bottom + dy > 500:
+            dy = 500 - self.rect.bottom
 
 
         if l_links:
@@ -110,7 +110,7 @@ class Figur(pygame.sprite.Sprite):
 
 
 
-spieler = Figur(200, 500, 2, 4)
+spieler = Figur(200, 500, 2, 5)
 
 run = True
 while run:
