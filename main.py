@@ -1,4 +1,5 @@
 import pygame
+import os
 
 pygame.init()
 
@@ -32,27 +33,29 @@ class Figur(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.lebendig = True
         self.speed = speed
-        self.hoehe_y = 0
+        self.s_hoehe_y = 0
         self.richtung = 1
         self.sprung = False
         self.drehen = False
         self.animation_list = []
         self.bild_index = 0
         self.aktion = 0
-        temp_list = []
         self.update_time = pygame.time.get_ticks()
-        for i in range(8):
-            bild = pygame.image.load(f'Bilder/Hero Knight/Sprites/HeroKnight/Idle/HeroKnight_Idle_{i}.png')
-            bild = pygame.transform.scale(bild, (int(bild.get_width() * scale), int(bild.get_height() * scale)))
-            temp_list.append(bild)
-        self.animation_list.append(temp_list)
-        temp_list = []
-        for i in range(10):
-            bild = pygame.image.load(f'Bilder/Hero Knight/Sprites/HeroKnight/Run/HeroKnight_Run_{i}.png')
-            bild = pygame.transform.scale(bild, (int(bild.get_width() * scale), int(bild.get_height() * scale)))
-            temp_list.append(bild)
 
-        self.animation_list.append(temp_list)
+
+        animationstypen = ['Idle', 'Run', 'Jump']
+        for animation in animationstypen:
+            #Bilder zurücksetzen
+            temp_list = []
+            #Anzahl Bilder zählen
+            anzahl_bilder = len(os.listdir(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}'))
+            print(anzahl_bilder)
+            for i in range(anzahl_bilder):
+                bild = pygame.image.load(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}/HeroKnight_{animation}_{i}.png')
+                bild = pygame.transform.scale(bild, (int(bild.get_width() * scale), int(bild.get_height() * scale)))
+                temp_list.append(bild)
+            self.animation_list.append(temp_list)
+
         self.Bilder = self.animation_list[self.aktion][self.bild_index]
         self.rect = self.Bilder.get_rect()
         self.rect.center = (x,y)
@@ -62,15 +65,16 @@ class Figur(pygame.sprite.Sprite):
         dy = 0
 
         if self.sprung == True:
-            self.hoehe_y = -15
+            self.s_hoehe_y = -15
             self.sprung = False
 
-        self.hoehe_y += GRAVITATION
-        if self.hoehe_y > 10:
-            self.hoehe_y
-        dy += self.hoehe_y
+        #Gravitation einfügen
+        self.s_hoehe_y += GRAVITATION
+        if self.s_hoehe_y > 10:
+            self.s_hoehe_y
+        dy += self.s_hoehe_y
 
-        #Kollision checken
+        #Kollision checken mit Boden checken
         if self.rect.bottom + dy > 500:
             dy = 500 - self.rect.bottom
 
@@ -91,16 +95,17 @@ class Figur(pygame.sprite.Sprite):
         # Bildreihenfolge
         ANIMATION_COOLDOWN = 100
         self.Bilder = self.animation_list[self.aktion][self.bild_index]
-        #überprüfe ob genügend Zeit vergangen ist
+        #überprüfe ob genügend Zeit vergangen ist seit letztem Update
         if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
             self.update_time = pygame.time.get_ticks()
             self.bild_index += 1
+        #wenn alle Bilder durchgelaufen sind wieder von vorne
         if self.bild_index >= len(self.animation_list[self.aktion]):
             self.bild_index = 0
 
-    def update_aktion(self, new_action):
-        if new_action != self.aktion:
-            self.aktion = new_action
+    def update_aktion(self, neue_aktion):
+        if neue_aktion != self.aktion:
+            self.aktion = neue_aktion
             self.bild_index = 0
             self.update_time = pygame.time.get_ticks()
 
@@ -125,7 +130,7 @@ while run:
         if l_links or l_rechts:
             spieler.update_aktion(1)#1: rennen
         else:
-            spieler.update_aktion(0)
+            spieler.update_aktion(0)#0: stehen
         spieler.bewegen(l_links, l_rechts)
 
 
@@ -139,7 +144,9 @@ while run:
                 l_links = True
             if event.key == pygame.K_d:
                 l_rechts = True
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE and spieler.lebendig:
+                spieler.sprung = True
+            if event.key == pygame.K_w:
                 spieler.sprung = True
             if event.key == pygame.K_ESCAPE:
                 run = False
