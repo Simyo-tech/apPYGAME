@@ -36,6 +36,7 @@ class Figur(pygame.sprite.Sprite):
         self.s_hoehe_y = 0
         self.richtung = 1
         self.sprung = False
+        self.in_luft = True
         self.drehen = False
         self.animation_list = []
         self.bild_index = 0
@@ -50,7 +51,7 @@ class Figur(pygame.sprite.Sprite):
             #Anzahl Bilder zählen
             anzahl_bilder = len(os.listdir(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}'))
             print(anzahl_bilder)
-            for i in range(anzahl_bilder):
+            for i in range(anzahl_bilder-1):
                 bild = pygame.image.load(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}/HeroKnight_{animation}_{i}.png')
                 bild = pygame.transform.scale(bild, (int(bild.get_width() * scale), int(bild.get_height() * scale)))
                 temp_list.append(bild)
@@ -64,9 +65,10 @@ class Figur(pygame.sprite.Sprite):
         dx = 0
         dy = 0
 
-        if self.sprung == True:
+        if self.sprung == True and self.in_luft == False:
             self.s_hoehe_y = -15
             self.sprung = False
+            self.in_luft = True
 
         #Gravitation einfügen
         self.s_hoehe_y += GRAVITATION
@@ -77,6 +79,7 @@ class Figur(pygame.sprite.Sprite):
         #Kollision checken mit Boden checken
         if self.rect.bottom + dy > 500:
             dy = 500 - self.rect.bottom
+            self.in_luft = False
 
 
         if l_links:
@@ -127,7 +130,9 @@ while run:
     spieler.draw()
 
     if spieler.lebendig:
-        if l_links or l_rechts:
+        if spieler.in_luft:
+            spieler.update_aktion(2)#2: springen
+        elif l_links or l_rechts:
             spieler.update_aktion(1)#1: rennen
         else:
             spieler.update_aktion(0)#0: stehen
