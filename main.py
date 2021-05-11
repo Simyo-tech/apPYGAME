@@ -5,7 +5,6 @@ pygame.init()
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Lost Knight')
 
@@ -25,7 +24,11 @@ BG = (240, 255, 255)
 RED = (255, 0, 0)
 def draw_bg():
     screen.fill(BG)
-    pygame.draw.line(screen, RED, (0, 500), (SCREEN_WIDTH, 500))
+    size = (1280, 720)
+    hintergrund = pygame.image.load("Bilder/Hintergrund/parallax_mountain_pack/layers/parallax-mountain-bg.png")
+    #pygame.draw.line(screen, RED, (0, 500), (SCREEN_WIDTH, 500))
+    screen.blit(pygame.transform.scale(hintergrund,size),(0,0))
+
 
 
 class Figur(pygame.sprite.Sprite):
@@ -50,7 +53,6 @@ class Figur(pygame.sprite.Sprite):
             temp_list = []
             #Anzahl Bilder zählen
             anzahl_bilder = len(os.listdir(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}'))
-            print(anzahl_bilder)
             for i in range(anzahl_bilder-1):
                 bild = pygame.image.load(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}/HeroKnight_{animation}_{i}.png')
                 bild = pygame.transform.scale(bild, (int(bild.get_width() * scale), int(bild.get_height() * scale)))
