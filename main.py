@@ -7,6 +7,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Lost Knight')
+hintergrund = pygame.image.load("Bilder/Hintergrund/parallax_mountain_pack/layers/parallax-mountain-bg.png").convert()
 
 #Bildwiederholungsrate
 clock = pygame.time.Clock()
@@ -25,11 +26,9 @@ RED = (255, 0, 0)
 def draw_bg():
     screen.fill(BG)
     size = (1280, 720)
-    hintergrund = pygame.image.load("Bilder/Hintergrund/parallax_mountain_pack/layers/parallax-mountain-bg.png")
-    berge = pygame.image.load("Bilder/Hintergrund/parallax_mountain_pack/layers/parallax-mountain-mountains.png")
     #pygame.draw.line(screen, RED, (0, 500), (SCREEN_WIDTH, 500))
     screen.blit(pygame.transform.scale(hintergrund,size),(0,0))
-    screen.blit(pygame.transform.scale(berge,size),(0,0))
+
 
 
 
