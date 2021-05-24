@@ -75,7 +75,7 @@ class Figur(pygame.sprite.Sprite):
 
         #Gravitation einfügen
         self.s_hoehe_y += GRAVITATION
-        if self.s_hoehe_y > 10:
+        if self.s_hoehe_y > 15:
             self.s_hoehe_y
         dy += self.s_hoehe_y
 
@@ -122,7 +122,7 @@ class Figur(pygame.sprite.Sprite):
 
 
 spieler = Figur(200, 500, 2, 5)
-
+#spieler2 = Figur(400, 500, 2, 5)
 run = True
 while run:
 
@@ -131,7 +131,9 @@ while run:
 
     spieler.update_animation()
     spieler.draw()
+    #spieler2.draw()
 
+    #Spieler Aktion Auswahl
     if spieler.lebendig:
         if spieler.in_luft:
             spieler.update_aktion(2)#2: springen
