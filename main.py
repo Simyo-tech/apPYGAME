@@ -33,10 +33,13 @@ def draw_bg():
 
 
 class Figur(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale, speed):
+    def __init__(self, figur_typ, x, y, scale, speed):
         pygame.sprite.Sprite.__init__(self)
+        self.figur_typ = figur_typ
         self.lebendig = True
         self.speed = speed
+        self.leben = 100
+        self.max_leben = self.leben
         self.s_hoehe_y = 0
         self.richtung = 1
         self.sprung = False
@@ -45,17 +48,18 @@ class Figur(pygame.sprite.Sprite):
         self.animation_list = []
         self.bild_index = 0
         self.aktion = 0
+        self.angriff = False
         self.update_time = pygame.time.get_ticks()
 
 
-        animationstypen = ['Idle', 'Run', 'Jump']
+        animationstypen = ['Idle', 'Run', 'Jump', 'Attack1', 'Death']
         for animation in animationstypen:
             #Bilder zurücksetzen
             temp_list = []
             #Anzahl Bilder zählen
-            anzahl_bilder = len(os.listdir(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}'))
+            anzahl_bilder = len(os.listdir(f'Bilder/HeroKnight/Sprites/{self.figur_typ}/{animation}'))
             for i in range(anzahl_bilder-1):
-                bild = pygame.image.load(f'Bilder/Hero Knight/Sprites/HeroKnight/{animation}/HeroKnight_{animation}_{i}.png')
+                bild = pygame.image.load(f'Bilder/HeroKnight/Sprites/{self.figur_typ}/{animation}/{self.figur_typ}_{animation}_{i}.png')
                 bild = pygame.transform.scale(bild, (int(bild.get_width() * scale), int(bild.get_height() * scale)))
                 temp_list.append(bild)
             self.animation_list.append(temp_list)
@@ -84,6 +88,8 @@ class Figur(pygame.sprite.Sprite):
             dy = 500 - self.rect.bottom
             self.in_luft = False
 
+        if self.angriff == True and self.bild_index == 5:
+            self.angriff = False
 
         if l_links:
             dx = -self.speed
@@ -96,6 +102,8 @@ class Figur(pygame.sprite.Sprite):
 
         self.rect.x += dx
         self.rect.y += dy
+
+
 
     def update_animation(self):
         # Bildreihenfolge
@@ -119,10 +127,16 @@ class Figur(pygame.sprite.Sprite):
     def draw(self):
         screen.blit(pygame.transform.flip(self.Bilder, self.drehen, False), self.rect)
 
+    def tod(self):
+        if self.leben == 0:
+            self.lebendig = False
+            self.kill()
 
+gegner_gruppe = pygame.sprite.Group()
 
-spieler = Figur(200, 500, 2, 5)
-#spieler2 = Figur(400, 500, 2, 5)
+spieler = Figur('HeroKnight', 200, 500, 2, 5)
+gegner = Figur('Gegner', 200, 443, 0.2, 5)
+
 run = True
 while run:
 
@@ -130,18 +144,29 @@ while run:
     draw_bg()
 
     spieler.update_animation()
+    gegner.update_animation()
     spieler.draw()
-    #spieler2.draw()
+    gegner.draw()
+    gegner.tod()
 
     #Spieler Aktion Auswahl
     if spieler.lebendig:
         if spieler.in_luft:
             spieler.update_aktion(2)#2: springen
+            #gegner.update_aktion(2)
         elif l_links or l_rechts:
             spieler.update_aktion(1)#1: rennen
+            #gegner.update_aktion(1)
+        elif spieler.angriff:
+            spieler.update_aktion(3)
+            #gegner.update_aktion(3)
         else:
             spieler.update_aktion(0)#0: stehen
+            gegner.update_aktion(0)
         spieler.bewegen(l_links, l_rechts)
+
+    if gegner.lebendig == False:
+        gegner.update_aktion(4)
 
 
     for event in pygame.event.get():
@@ -154,10 +179,14 @@ while run:
                 l_links = True
             if event.key == pygame.K_d:
                 l_rechts = True
-            if event.key == pygame.K_SPACE and spieler.lebendig:
+            if event.key == pygame.K_w and spieler.lebendig:
                 spieler.sprung = True
-            if event.key == pygame.K_w:
-                spieler.sprung = True
+            if event.key == pygame.K_SPACE:
+                spieler.angriff = True
+                if pygame.sprite.collide_rect(spieler, gegner):
+                    if gegner.lebendig:
+                        gegner.leben -= 25
+                        print(gegner.leben)
             if event.key == pygame.K_ESCAPE:
                 run = False
 
@@ -167,6 +196,9 @@ while run:
                 l_links = False
             if event.key == pygame.K_d:
                 l_rechts = False
+
+
+
 
 
     pygame.display.update()
