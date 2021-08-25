@@ -130,12 +130,20 @@ class Figur(pygame.sprite.Sprite):
     def tod(self):
         if self.leben == 0:
             self.lebendig = False
-            self.kill()
+            if self.lebendig == False and self.bild_index == 4:
+                self.rect.y = -300
+
 
 gegner_gruppe = pygame.sprite.Group()
 
 spieler = Figur('HeroKnight', 200, 500, 2, 5)
-gegner = Figur('Gegner', 200, 443, 0.2, 5)
+gegner1 = Figur('Gegner', 200, 443, 0.2, 5)
+gegner2 = Figur('Gegner', 600, 443, 0.2, 5)
+
+
+gegner_liste = []
+gegner_liste.append(gegner1)
+gegner_liste.append(gegner2)
 
 run = True
 while run:
@@ -144,10 +152,13 @@ while run:
     draw_bg()
 
     spieler.update_animation()
-    gegner.update_animation()
+    gegner1.update_animation()
+    gegner2.update_animation()
     spieler.draw()
-    gegner.draw()
-    gegner.tod()
+    gegner1.draw()
+    gegner2.draw()
+    gegner1.tod()
+    gegner2.tod()
 
     #Spieler Aktion Auswahl
     if spieler.lebendig:
@@ -162,11 +173,13 @@ while run:
             #gegner.update_aktion(3)
         else:
             spieler.update_aktion(0)#0: stehen
-            gegner.update_aktion(0)
+            gegner1.update_aktion(0)
+            gegner2.update_aktion(0)
         spieler.bewegen(l_links, l_rechts)
 
-    if gegner.lebendig == False:
-        gegner.update_aktion(4)
+    for gegner in gegner_liste:
+        if gegner.lebendig == False:
+            gegner.update_aktion(4)
 
 
     for event in pygame.event.get():
@@ -183,10 +196,11 @@ while run:
                 spieler.sprung = True
             if event.key == pygame.K_SPACE:
                 spieler.angriff = True
-                if pygame.sprite.collide_rect(spieler, gegner):
-                    if gegner.lebendig:
-                        gegner.leben -= 25
-                        print(gegner.leben)
+                for gegner in gegner_liste:
+                    if pygame.sprite.collide_rect(spieler, gegner):
+                        if gegner.lebendig:
+                            gegner.leben -= 25
+                            print(gegner.leben)
             if event.key == pygame.K_ESCAPE:
                 run = False
 
